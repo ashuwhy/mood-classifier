@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icon.png" alt="Mood Classifier Logo" width="120"/>
+  <img src="icon/icon.png" alt="Mood Classifier Logo" width="120"/>
   <h1>Mood Classifier</h1>
   <p>An elegant desktop application for music mood analysis and classification using deep learning</p>
   
@@ -47,7 +47,7 @@ Mood Classifier is a sophisticated desktop application that analyzes music to de
 1. Clone the repository
 
 ```bash
-git clone https://github.com/alexshcer/mood-classifier.git
+git clone https://github.com/ashuwhy/mood-classifier.git
 ```
 2. Install dependencies
 ```
@@ -72,8 +72,8 @@ The application uses a combination of signal processing and deep learning models
 
 ## 👨‍💻 Author
 
-**Alex Shcer**
-- GitHub: [@alexshcer](https://github.com/alexshcer)
+**Ashutosh**
+- GitHub: [@ashuwhy](https://github.com/ashuwhy)
 
 ## 📄 License
 
@@ -92,6 +92,6 @@ This project is licensed under the Creative Commons Attribution-NonCommercial-No
 ---
 
 <div align="center">
-  Made with ❤️ by <a href="https://github.com/alexshcer">Alex Shcer</a>
+  Made with ❤️ by <a href="https://github.com/ashuwhy">Ashutosh</a>
 </div>
 

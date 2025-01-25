@@ -1,0 +1,13 @@
+/node_modules
+/dist
+/build
+/out
+/Mood Classifier-darwin-*
+*.asar
+.DS_Store
+.idea
+/private
+.env
+
+# ytdl-core cache files
+js/*-base.js

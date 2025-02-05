@@ -84,12 +84,42 @@ function decodeFile(arrayBuffer) {
 
 function computeKeyBPM(audioSignal) {
     let vectorSignal = essentia.arrayToVector(audioSignal);
-    const keyData = essentia.KeyExtractor(vectorSignal, true, 4096, 4096, 12, 3500, 60, 25, 0.2, 'bgate', 16000, 0.0001, 440, 'cosine', 'hann');
-    const bpm = essentia.PercivalBpmEstimator(vectorSignal, 1024, 2048, 128, 128, 210, 50, 16000).bpm;
-    
+    const keyData = essentia.KeyExtractor(
+        vectorSignal, true, 4096, 4096, 12, 3500, 60, 25, 0.2, 'bgate', 16000, 0.0001, 440, 'cosine', 'hann'
+    );
+    const bpmValue = essentia.PercivalBpmEstimator(
+        vectorSignal, 1024, 2048, 128, 128, 210, 50, 16000
+    ).bpm;
+
+    // Define acceptable tempo range (in BPM)
+    const lowerBound = 60;
+    const upperBound = 180;
+    const roundBpm = (v) => Math.round(v * 10) / 10;
+    const candidates = new Set();
+
+    // Include the primary BPM candidate if it lies in the acceptable range
+    if (bpmValue >= lowerBound && bpmValue <= upperBound) {
+        candidates.add(roundBpm(bpmValue));
+    }
+    // Try a candidate obtained by doubling the BPM (commonly a valid alternative)
+    if (bpmValue * 2 >= lowerBound && bpmValue * 2 <= upperBound) {
+        candidates.add(roundBpm(bpmValue * 2));
+    }
+    // Also try a candidate obtained by halving the BPM (when appropriate)
+    if (bpmValue / 2 >= lowerBound && bpmValue / 2 <= upperBound) {
+        candidates.add(roundBpm(bpmValue / 2));
+    }
+    // If no candidate is in range, fall back to the computed value
+    if (candidates.size === 0) {
+        candidates.add(roundBpm(bpmValue));
+    }
+
+    // Convert the set to a sorted array
+    const bpmCandidates = Array.from(candidates).sort((a, b) => a - b);
+
     return {
         keyData: keyData,
-        bpm: bpm
+        bpm: bpmCandidates
     };
 }
 

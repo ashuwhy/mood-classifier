@@ -230,11 +230,11 @@ div#results {
 
 #bpm-and-key {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     margin-top: 3rem;
     width: 100%;
     box-sizing: border-box;
-    gap: 10px;
+    gap: 20px;
     justify-content: space-evenly;
 }
 
@@ -242,43 +242,8 @@ div#results {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    flex: 1;
-    max-width: 150px;
-    box-sizing: border-box;
-}
-
-#bpm-value, #key-value {
-    background: linear-gradient(180deg, #353535 0%, #2d2d2d 100%);
-    border: 1px solid #454545;
-    border-radius: 30px;
-    padding: 0.5rem 1rem;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 13px;
-    font-weight: 500;
-}
-
-#bpm-value {
-    height: 40px;
-    width: 86px;
-    margin-top: 20px;
-}
-
-#key-value {
-    height: 40px;
-    width: 120px;
-    margin-top: 20px;
-}
-
-div#file-select-area {
-    margin-top: 8%;
-    margin-left: 80px;
-    margin-right: 8%;
+    width: 150px;  /* Fixed width for container */
+    position: relative;  /* Added for stable positioning */
 }
 
 .tag {
@@ -287,6 +252,47 @@ div#file-select-area {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: absolute;  /* Position tag absolutely */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);  /* Center the tag */
+}
+
+.value-box {
+    background: linear-gradient(180deg, #353535 0%, #2d2d2d 100%);
+    border: 1px solid #454545;
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+    margin-top: 20px;  /* Space for the tag */
+    padding: 0.5rem 1.2rem;
+    min-width: 86px;
+    margin-top: 30px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#bpm-value {
+    border-radius: 100px;
+    width: auto;  /* Allow BPM box to grow based on content */
+    transition: width 0.3s ease;
+}
+
+#key-value {
+    border-radius: 100px;
+    margin-top: 30px;
+    width: 120px;  /* Fixed width for key value */
+}
+
+
+div#file-select-area {
+    margin-top: 8%;
+    margin-left: 80px;
+    margin-right: 8%;
 }
 
 /* Remove footer */

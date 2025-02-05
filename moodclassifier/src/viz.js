@@ -22,10 +22,19 @@ class AnalysisResults {
     }
 
     updateValueBoxes(essentiaAnalysis) {
-        const stringBpm = essentiaAnalysis.bpm.toString();
-        const formattedBpm = stringBpm.slice(0, stringBpm.indexOf('.') + 2); // keep 1 decimal places only
+        const bpmCandidates = essentiaAnalysis.bpm;
+        const formattedBpm = bpmCandidates.join(" / ");
         this.bpmBox.textContent = formattedBpm;
         this.keyBox.textContent = `${essentiaAnalysis.keyData.key} ${essentiaAnalysis.keyData.scale}`;
+        
+        this.bpmBox.addEventListener('mouseenter', () => {
+            const roundedBPM = bpmCandidates.map(bpm => Math.round(bpm));
+            this.bpmBox.textContent = roundedBPM.join(" / ");
+        });
+        
+        this.bpmBox.addEventListener('mouseleave', () => {
+            this.bpmBox.textContent = formattedBpm;
+        });
     }
 }
 

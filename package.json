@@ -1,12 +1,21 @@
 {
-  "name": "Mood Classifier",
-  "version": "1.0.0",
+  "name": "mood-classifier",
+  "version": "1.0.5",
+  "description": "An application that gives BPM and Key of a song and classifies the mood of songs",
+  "author": {
+    "name": "Ashutosh Sharma",
+    "email": "ashutoshsharmawhy@gmail.com",
+    "url": "https://github.com/ashuwhy"
+  },
   "type": "commonjs",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
-    "build": "electron-packager . \"Mood Classifier\" --platform=darwin --arch=arm64 --asar --icon='icon/icon.icns' --overwrite --asar-unpack=\"node_modules/ffmpeg-static/**/*\" --ignore=\"node_modules/ffmpeg-static/!(ffmpeg-darwin-arm64)\""
+    "build": "electron-builder -mwl",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.15.9",
@@ -20,7 +29,6 @@
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
-    "@electron/packager": "^18.3.5",
     "electron": "^25.3.0",
     "electron-builder": "^24.9.1"
   },
@@ -31,21 +39,94 @@
     "asarUnpack": [
       "node_modules/ffmpeg-static/**/*"
     ],
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
     "mac": {
-      "target": "dmg",
-      "arch": [
-        "arm64"
-      ]
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.music",
+      "icon": "icon/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 400
+      }
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "icon/icon.ico",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Mood Classifier"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Audio",
+      "icon": "icon/icon.png",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "extraResources": [
       {
-        "from": "/opt/homebrew/bin/ffmpeg",
+        "from": "node_modules/ffmpeg-static/ffmpeg",
         "to": "ffmpeg"
       }
-    ],
-    "files": [
-      "**/*",
-      "node_modules/ffmpeg-static/**/*"
     ]
   }
 }

@@ -10,12 +10,25 @@ const axios = require('axios');
 const https = require('https');
 const ffmpeg = require('fluent-ffmpeg');
 
-// Configure ytdl-core base.js location
-process.env.YTDL_NO_UPDATE = 'true';  // Disable auto-updates
-if (!fs.existsSync(path.join(__dirname, 'js'))) {
-    fs.mkdirSync(path.join(__dirname, 'js'), { recursive: true });
+// Add these functions at the top level
+function getAppDataPath() {
+    const appName = 'MoodClassifier';
+    switch (process.platform) {
+        case "darwin": {
+            return path.join(process.env.HOME, "Library", "Application Support", appName);
+        }
+        case "win32": {
+            return path.join(process.env.APPDATA, appName);
+        }
+        case "linux": {
+            return path.join(process.env.HOME, `.${appName}`);
+        }
+        default: {
+            console.log("Unsupported platform!");
+            process.exit(1);
+        }
+    }
 }
-process.env.YTDL_CACHE_DIR = path.join(__dirname, 'js');
 
 // Configure ffmpeg path
 let ffmpegPath;
@@ -119,7 +132,19 @@ ipcMain.handle('toggle-enabled', async (event, enabled) => {
     }
 });
 
-// Handle YouTube download request
+// Modify the ytdl-core configuration section
+// Replace the existing ytdl configuration with:
+const appDataPath = getAppDataPath();
+const ytdlCachePath = path.join(appDataPath, 'ytdl-cache');
+
+// Configure ytdl-core base.js location
+process.env.YTDL_NO_UPDATE = 'true';  // Disable auto-updates
+if (!fs.existsSync(ytdlCachePath)) {
+    fs.mkdirSync(ytdlCachePath, { recursive: true });
+}
+process.env.YTDL_CACHE_DIR = ytdlCachePath;
+
+// Update the download-youtube-audio handler
 ipcMain.handle('download-youtube-audio', async (event, url) => {
     if (!ytdl) ytdl = require('@distube/ytdl-core');
     
@@ -141,8 +166,13 @@ ipcMain.handle('download-youtube-audio', async (event, url) => {
             throw new Error('Save operation was canceled.');
         }
 
-        // Create a temporary file for the downloaded audio
-        const tempFile = path.join(app.getPath('temp'), `${Date.now()}.webm`);
+        // Create a temporary file in the app data directory
+        const tempFile = path.join(appDataPath, `${Date.now()}.webm`);
+        
+        // Ensure the directory exists
+        if (!fs.existsSync(appDataPath)) {
+            fs.mkdirSync(appDataPath, { recursive: true });
+        }
         
         // First download the audio to a temporary file
         await new Promise((resolve, reject) => {

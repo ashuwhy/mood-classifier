@@ -158,7 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 downloadButton.disabled = true;
-                downloadButton.textContent = 'downloading...';
+                // Store original text content
+                const originalText = downloadButton.textContent;
+                // Create loading indicator element
+                const loadingSpan = document.createElement('span');
+                loadingSpan.className = 'loading-indicator';
+                loadingSpan.style.opacity = '0.7';
+                downloadButton.appendChild(loadingSpan);
                 
                 const result = await window.electronAPI.downloadYouTubeAudio(url);
                 const fileBuffer = await window.electronAPI.readAudioFile(result.filePath);
@@ -177,7 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Error processing YouTube download: ' + error.message);
             } finally {
                 downloadButton.disabled = false;
-                downloadButton.textContent = 'dna';
+                // Remove loading indicator if it exists
+                const loadingIndicator = downloadButton.querySelector('.loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
             }
         });
     }

@@ -40,10 +40,14 @@ function toggleUploadDisplayHTML(mode) {
             const waveformDiv = document.createElement('div');
             waveformDiv.setAttribute('id', 'waveform');
 
-            const controlsTemplate = document.querySelector('#playback-controls');
+            // Remove any existing controls first
+            const existingControls = document.querySelector('#controls-container');
+            if (existingControls) {
+                existingControls.remove();
+            }
 
             fileSelectArea.appendChild(waveformDiv);
-            fileSelectArea.appendChild(controlsTemplate.content.cloneNode(true));
+            // Don't append controls here - they'll be added by PlaybackControls class
 
             return WaveSurfer.create({
                 container: '#waveform',
@@ -61,48 +65,45 @@ function toggleUploadDisplayHTML(mode) {
 }
 
 class PlaybackControls {
-    constructor(wavesurferInstance) {
-        this.wavesurfer = wavesurferInstance;
-        this.initializeControls();
+    constructor(wavesurfer) {
+        this.wavesurfer = wavesurfer;
+        this.template = document.getElementById('playback-controls');
+        this.controls = this.template.content.cloneNode(true);
+        this.isMuted = false;
+
+        // Add controls after waveform
+        document.getElementById('waveform').after(this.controls);
+
+        // Get control elements
+        this.playButton = document.getElementById('play');
+        this.backwardButton = document.getElementById('backward');
+        this.forwardButton = document.getElementById('forward');
+        this.muteButton = document.getElementById('mute');
+        this.volumeSlider = document.getElementById('volume-slider');
+        this.lyricsButton = document.getElementById('lyrics-button');
+
+        // Set initial volume to 50%
+        this.wavesurfer.setVolume(0.5);
+        this.volumeSlider.value = 0.5;  // Set the slider's position to 50%
+        this.updateVolumeSliderBackground();  // Update the slider's background
+
+        // Add event listeners
+        this.addEventListeners();
     }
 
-    initializeControls() {
-        // Wait for controls to be available in the DOM
-        setTimeout(() => {
-            this.controls = {
-                backward: document.querySelector('#backward'),
-                play: document.querySelector('#play'),
-                forward: document.querySelector('#forward'),
-                mute: document.querySelector('#mute'),
-                volumeSlider: document.querySelector('#volume-slider'),
-                lyricsButton: document.querySelector('#lyrics-button')
-            };
-
-            if (this.controls.volumeSlider) {
-                // Set initial volume to 30%
-                const defaultVolume = 0.3;
-                this.wavesurfer.setVolume(defaultVolume);
-                this.controls.volumeSlider.value = defaultVolume;
-                this.controls.volumeSlider.style.setProperty('--volume-percentage', '30%');
-            }
-
-            this.setupEventListeners();
-        }, 100); // Small delay to ensure DOM elements are available
-    }
-
-    setupEventListeners() {
+    addEventListeners() {
         if (!this.controls) return;
 
-        if (this.controls.backward) {
-            this.controls.backward.onclick = () => {
+        if (this.backwardButton) {
+            this.backwardButton.onclick = () => {
                 const currentTime = this.wavesurfer.getCurrentTime();
                 const newTime = Math.max(currentTime - 5, 0);
                 this.wavesurfer.seekTo(newTime / this.wavesurfer.getDuration());
             };
         }
 
-        if (this.controls.play) {
-            this.controls.play.onclick = () => {
+        if (this.playButton) {
+            this.playButton.onclick = () => {
                 this.wavesurfer.playPause();
                 this.updatePlayButtonIcon();
             };
@@ -112,8 +113,8 @@ class PlaybackControls {
             this.wavesurfer.on('pause', () => this.updatePlayButtonIcon());
         }
 
-        if (this.controls.forward) {
-            this.controls.forward.onclick = () => {
+        if (this.forwardButton) {
+            this.forwardButton.onclick = () => {
                 const currentTime = this.wavesurfer.getCurrentTime();
                 const duration = this.wavesurfer.getDuration();
                 const newTime = Math.min(currentTime + 5, duration);
@@ -121,59 +122,59 @@ class PlaybackControls {
             };
         }
 
-        if (this.controls.mute) {
-            this.controls.mute.onclick = () => {
-                this.wavesurfer.toggleMute();
-                this.updateMuteButtonIcon();
+        if (this.muteButton) {
+            this.muteButton.onclick = () => {
+                this.isMuted = !this.isMuted;
+                this.wavesurfer.setMuted(this.isMuted);
+                
+                // Update button icon
+                const muteIcon = this.muteButton.querySelector('.material-icons-round');
+                muteIcon.textContent = this.isMuted ? 'volume_off' : 'volume_up';
+                
+                // Update volume slider
+                if (this.isMuted) {
+                    this.volumeSlider.setAttribute('data-previous-value', this.volumeSlider.value);
+                    this.volumeSlider.value = 0;
+                } else {
+                    const previousValue = this.volumeSlider.getAttribute('data-previous-value') || 0.5;
+                    this.volumeSlider.value = previousValue;
+                    this.wavesurfer.setVolume(previousValue);
+                }
+                
+                // Update volume slider background
+                this.updateVolumeSliderBackground();
             };
         }
 
-        if (this.controls.volumeSlider) {
-            this.controls.volumeSlider.oninput = (e) => {
+        if (this.volumeSlider) {
+            this.volumeSlider.oninput = (e) => {
                 const volume = parseFloat(e.target.value);
                 this.wavesurfer.setVolume(volume);
-                this.updateVolumeSlider(volume);
-                this.updateMuteButtonIcon();
+                this.updateVolumeSliderBackground();
+                
+                // Update mute state and icon
+                this.isMuted = volume === 0;
+                const muteIcon = this.muteButton.querySelector('.material-icons-round');
+                muteIcon.textContent = this.isMuted ? 'volume_off' : 'volume_up';
             };
         }
 
-        if (this.controls.lyricsButton) {
-            this.controls.lyricsButton.addEventListener('click', () => this.showLyrics());
+        if (this.lyricsButton) {
+            this.lyricsButton.addEventListener('click', () => this.showLyrics());
         }
-    }
-
-    toggleEnabled(isEnabled) {
-        if (!this.controls) return;
-        
-        Object.values(this.controls).forEach(control => {
-            if (control) {
-                if (isEnabled) {
-                    control.removeAttribute('disabled');
-                } else {
-                    control.setAttribute('disabled', '');
-                }
-            }
-        });
     }
 
     updatePlayButtonIcon() {
-        if (!this.controls.play) return;
+        if (!this.playButton) return;
         const isPlaying = this.wavesurfer.isPlaying();
-        const icon = this.controls.play.querySelector('.material-icons-round');
+        const icon = this.playButton.querySelector('.material-icons-round');
         icon.textContent = isPlaying ? 'pause' : 'play_arrow';
     }
 
-    updateMuteButtonIcon() {
-        if (!this.controls.mute) return;
-        const isMuted = this.wavesurfer.getVolume() === 0;
-        const icon = this.controls.mute.querySelector('.material-icons-round');
-        icon.textContent = isMuted ? 'volume_off' : 'volume_up';
-    }
-
-    updateVolumeSlider(volume) {
-        if (!this.controls.volumeSlider) return;
-        const percentage = (volume * 100).toFixed(0) + '%';
-        this.controls.volumeSlider.style.setProperty('--volume-percentage', percentage);
+    updateVolumeSliderBackground() {
+        const value = this.volumeSlider.value;
+        const percentage = (value * 100).toFixed(2);
+        this.volumeSlider.style.setProperty('--volume-percentage', `${percentage}%`);
     }
 
     async showLyrics() {
@@ -182,79 +183,105 @@ class PlaybackControls {
             return;
         }
 
-        const overlay = document.querySelector('.lyrics-overlay');
-        const songTitle = overlay.querySelector('.song-title');
-        const songArtist = overlay.querySelector('.song-artist');
-        const lyricsContent = overlay.querySelector('.lyrics-content');
-
         try {
+            // Fetch song info first
+            const songInfo = await window.electronAPI.getLyrics({
+                artist: window.currentSongMetadata.artist,
+                title: window.currentSongMetadata.title
+            }).catch(error => {
+                // Handle specific error cases
+                if (error.message.includes('No lyrics found')) {
+                    alert('No lyrics found for this song');
+                } else {
+                    alert('Unable to load lyrics');
+                    console.error('Error fetching lyrics:', error);
+                }
+                return null;
+            });
+
+            // If no songInfo or error occurred, return early
+            if (!songInfo || !songInfo.lyrics) {
+                return;
+            }
+
+            // Only show overlay if lyrics were found
+            const overlay = document.querySelector('.lyrics-overlay');
+            const songTitle = overlay.querySelector('.song-title');
+            const songArtist = overlay.querySelector('.song-artist');
+            const lyricsContent = overlay.querySelector('.lyrics-content');
+
             // Show loading state
             overlay.style.display = 'flex';
             overlay.style.opacity = '1';
             overlay.style.pointerEvents = 'auto';
-            songTitle.textContent = window.currentSongMetadata.title;
-            songArtist.textContent = window.currentSongMetadata.artist;
-            lyricsContent.innerHTML = '<div class="lyrics-line loading">Loading lyrics...</div>';
+            songTitle.textContent = songInfo.title;
+            songArtist.textContent = songInfo.artist;
 
-            // Fetch song info
-            const songInfo = await window.electronAPI.getLyrics({
-                artist: window.currentSongMetadata.artist,
-                title: window.currentSongMetadata.title
-            });
-
-            if (songInfo && songInfo.lyrics) {
-                // Update metadata with more accurate info
-                songTitle.textContent = songInfo.title;
-                songArtist.textContent = songInfo.artist;
-
-                // Format and display lyrics
-                const formattedLyrics = songInfo.lyrics
-                    .split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0 && !line.includes('*'))  // Remove empty lines and Musixmatch footer
-                    .map(line => {
-                        // Check if line is a section header (e.g., [Verse], [Chorus])
-                        if (line.match(/^\[(.*?)\]$/)) {
-                            return `<div class="lyrics-line section-header">${line}</div>`;
-                        }
-                        return `<div class="lyrics-line">${line}</div>`;
-                    })
-                    .join('');
-
-                lyricsContent.innerHTML = formattedLyrics;
-
-                // Update album art if available
-                if (songInfo.album_art) {
-                    handleAlbumArtLoad(songInfo.album_art);
-                }
-
-                // Add click handler to close overlay
-                const closeHandler = (e) => {
-                    if (e.target === overlay) {
-                        overlay.style.display = 'none';
-                        overlay.style.opacity = '0';
-                        overlay.style.pointerEvents = 'none';
-                        overlay.removeEventListener('click', closeHandler);
+            // Format and display lyrics
+            const formattedLyrics = songInfo.lyrics
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0 && !line.includes('*'))
+                .map(line => {
+                    if (line.match(/^\[(.*?)\]$/)) {
+                        return `<div class="lyrics-line section-header">${line}</div>`;
                     }
-                };
-                overlay.addEventListener('click', closeHandler);
+                    return `<div class="lyrics-line">${line}</div>`;
+                })
+                .join('');
 
-                // Add keyboard handler to close overlay with Escape key
-                const keyHandler = (e) => {
-                    if (e.key === 'Escape') {
-                        overlay.style.display = 'none';
-                        overlay.style.opacity = '0';
-                        overlay.style.pointerEvents = 'none';
-                        document.removeEventListener('keydown', keyHandler);
-                    }
-                };
-                document.addEventListener('keydown', keyHandler);
-            } else {
-                lyricsContent.innerHTML = '<div class="lyrics-line">No lyrics found</div>';
+            lyricsContent.innerHTML = formattedLyrics;
+
+            // Update album art if available
+            if (songInfo.album_art) {
+                handleAlbumArtLoad(songInfo.album_art);
             }
+
+            // Add click handler to close overlay
+            const closeHandler = (e) => {
+                if (e.target === overlay) {
+                    overlay.style.display = 'none';
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    overlay.removeEventListener('click', closeHandler);
+                }
+            };
+            overlay.addEventListener('click', closeHandler);
+
+            // Add keyboard handler to close overlay with Escape key
+            const keyHandler = (e) => {
+                if (e.key === 'Escape') {
+                    overlay.style.display = 'none';
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    document.removeEventListener('keydown', keyHandler);
+                }
+            };
+            document.addEventListener('keydown', keyHandler);
+
         } catch (error) {
             console.error('Error fetching lyrics:', error);
-            lyricsContent.innerHTML = '<div class="lyrics-line">Error loading lyrics</div>';
+            alert('Unable to load lyrics');
+        }
+    }
+
+    toggleEnabled(enabled) {
+        const buttons = [
+            this.playButton,
+            this.backwardButton,
+            this.forwardButton,
+            this.muteButton,
+            this.lyricsButton
+        ];
+        
+        buttons.forEach(button => {
+            if (button) {
+                button.disabled = !enabled;
+            }
+        });
+        
+        if (this.volumeSlider) {
+            this.volumeSlider.disabled = !enabled;
         }
     }
 }

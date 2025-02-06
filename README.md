@@ -8,23 +8,23 @@
   ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
 </div>
 
-## 🎵 Overview
+## Overview
 
 <div align="center">
-  <img src="img/Screenshot%202024-11-14%20at%207.06.17%E2%80%AFAM.png" alt="Mood Classifier Interface"/>
+  <img src="img/screenshot.png" alt="Mood Classifier Interface"/>
 </div>
 
 Mood Classifier is a sophisticated desktop application that analyzes music to determine various emotional and rhythmic characteristics. Using advanced deep learning models and audio processing techniques, it provides insights into:
 
-- 💃 Danceability
-- 😊 Happiness
-- 😢 Sadness
-- 😌 Relaxation
-- 😠 Aggressiveness
-- 🎼 Musical Key
-- ⚡ BPM (Beats Per Minute)
+- Danceability
+- Happiness
+- Sadness
+- Relaxation
+- Aggressiveness
+- Musical Key
+- BPM (Beats Per Minute)
 
-## ✨ Features
+## Features
 
 - **YouTube Integration**: Download and analyze music directly from YouTube URLs
 - **Drag & Drop**: Easy file upload interface
@@ -33,7 +33,7 @@ Mood Classifier is a sophisticated desktop application that analyzes music to de
 - **Modern UI**: Sleek, dark-themed interface with intuitive controls
 - **Cross-Platform**: Works on macOS, Windows, and Linux
 
-## 🛠 Technology Stack
+## Technology Stack
 
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Backend**: Electron.js
@@ -42,7 +42,7 @@ Mood Classifier is a sophisticated desktop application that analyzes music to de
 - **UI Framework**: Semantic UI
 - **Audio Visualization**: WaveSurfer.js
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Clone the repository
 
@@ -57,7 +57,7 @@ npm install
 ```
 npm start
 ```
-## 🎯 Usage
+## Usage
 
 1. Launch the application
 2. Either:
@@ -66,16 +66,16 @@ npm start
 3. Wait for the analysis to complete
 4. View the detailed mood classification results and audio controls
 
-## 🧠 How It Works
+## How It Works
 
 The application uses a combination of signal processing and deep learning models to analyze audio features. It processes the audio through multiple neural networks trained on vast music datasets to classify different emotional characteristics.
 
-## 👨‍💻 Author
+## Author
 
 **Ashutosh**
 - GitHub: [@ashuwhy](https://github.com/ashuwhy)
 
-## 📄 License
+## License
 
 This project is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License - see the [LICENSE](LICENSE) file for details.
 
@@ -83,7 +83,7 @@ This project is licensed under the Creative Commons Attribution-NonCommercial-No
 - TempoCNN architecture models are derived from work licensed under the AGPL-3.0 license terms.
 - Original TempoCNN models by Hendrik Schreiber: [tempo-cnn](https://github.com/hendriks73/tempo-cnn)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Essentia.js for audio analysis capabilities
 - Music Technology Group for research contributions

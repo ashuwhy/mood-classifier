@@ -30,7 +30,8 @@
   },
   "devDependencies": {
     "electron": "^25.3.0",
-    "electron-builder": "^24.9.1"
+    "electron-builder": "^24.9.1",
+    "nsisEnvVar": "^1.0.0"
   },
   "build": {
     "appId": "com.moodclassifier.app",
@@ -51,17 +52,32 @@
       "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
       "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
       "!**/{appveyor.yml,.travis.yml,circle.yml}",
-      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
+      "!**/.git*",
+      "!**/.eslintrc*",
+      "!**/nodemon.json",
+      "!**/.prettier*",
+      "!**/webpack.config.js",
+      "!**/babel.config.js",
+      "!**/tsconfig.json",
+      "!**/.env*",
+      "!**/jest.config.js",
+      "!**/.vscode/**",
+      "!**/coverage/**",
+      "!**/.nyc_output/**",
+      "!**/docs/**",
+      "!**/test/**",
+      "!**/__tests__/**",
+      "!**/dist/**",
+      "!**/build/{background.png,installer.nsh,entitlements.mac.plist}",
+      "!node_modules/ffmpeg-static/{node_modules,docs,test}/**"
     ],
     "directories": {
       "buildResources": "build",
       "output": "dist"
     },
     "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ],
+      "target": "dmg",
       "category": "public.app-category.music",
       "icon": "icon/icon.icns",
       "hardenedRuntime": true,
@@ -86,32 +102,33 @@
       "window": {
         "width": 540,
         "height": 400
-      }
+      },
+      "background": "build/background.png",
+      "iconSize": 80,
+      "iconTextSize": 12,
+      "title": "Install Mood Classifier"
     },
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
+      "target": "nsis",
       "icon": "icon/icon.ico",
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "signAndEditExecutable": true
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Mood Classifier"
+      "shortcutName": "Mood Classifier",
+      "include": "build/installer.nsh",
+      "perMachine": true,
+      "installerIcon": "icon/icon.ico",
+      "uninstallerIcon": "icon/icon.ico",
+      "installerHeaderIcon": "icon/icon.ico",
+      "menuCategory": true,
+      "displayLanguageSelector": true,
+      "deleteAppDataOnUninstall": true,
+      "packElevateHelper": true
     },
     "linux": {
       "target": [
@@ -124,8 +141,9 @@
     },
     "extraResources": [
       {
-        "from": "node_modules/ffmpeg-static/ffmpeg",
-        "to": "ffmpeg"
+        "from": "build/extraResources/",
+        "to": ".",
+        "filter": ["**/*"]
       }
     ]
   }

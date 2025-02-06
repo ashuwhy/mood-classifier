@@ -242,8 +242,8 @@ div#results {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 150px;  /* Fixed width for container */
-    position: relative;  /* Added for stable positioning */
+    width: 150px;
+    position: relative;
 }
 
 .tag {
@@ -252,10 +252,10 @@ div#results {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    position: absolute;  /* Position tag absolutely */
+    position: absolute;
     top: 0;
     left: 50%;
-    transform: translateX(-50%);  /* Center the tag */
+    transform: translateX(-50%);
 }
 
 .value-box {
@@ -264,7 +264,7 @@ div#results {
     border-radius: 8px;
     color: white;
     text-align: center;
-    margin-top: 20px;  /* Space for the tag */
+    margin-top: 20px;
     padding: 0.5rem 1.2rem;
     min-width: 86px;
     margin-top: 30px;
@@ -278,16 +278,14 @@ div#results {
 
 #bpm-value {
     border-radius: 100px;
-    width: auto;  /* Allow BPM box to grow based on content */
-    transition: width 0.3s ease;
+    width: auto;
+    transition: width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 #key-value {
     border-radius: 100px;
-    margin-top: 30px;
-    width: 120px;  /* Fixed width for key value */
+    width: 120px;
 }
-
 
 div#file-select-area {
     margin-top: 8%;
@@ -734,7 +732,7 @@ i.icon {
 
 /* Track hover effect */
 .volume-slider:hover {
-    height: 5px;
+    /* height: 5px; */
 }
 
 /* Focus styles */

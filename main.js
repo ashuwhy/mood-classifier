@@ -34,29 +34,105 @@ function getAppDataPath() {
 let ffmpegPath;
 try {
     if (app.isPackaged) {
-        // For production: use the unpacked ffmpeg from ffmpeg-static
-        const ffmpegStatic = require('ffmpeg-static');
-        ffmpegPath = ffmpegStatic.replace(
-            'app.asar',
-            'app.asar.unpacked'
-        );
+        // For production: first try the bundled ffmpeg from extraResources
+        const bundledPath = path.join(process.resourcesPath, 'ffmpeg', process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg');
+        console.log('Checking bundled FFmpeg path:', bundledPath);
         
-        // Fallback to system ffmpeg if the static version isn't found
-        if (!fs.existsSync(ffmpegPath)) {
-            ffmpegPath = '/opt/homebrew/bin/ffmpeg';
+        if (fs.existsSync(bundledPath)) {
+            console.log('Using bundled FFmpeg');
+            ffmpegPath = bundledPath;
+        } else {
+            console.log('Bundled FFmpeg not found, trying ffmpeg-static');
+            try {
+                // Fallback to ffmpeg-static
+                const ffmpegStatic = require('ffmpeg-static');
+                if (ffmpegStatic) {
+                    ffmpegPath = ffmpegStatic;
+                    
+                    // Handle asar case for packaged app
+                    if (app.isPackaged && ffmpegPath && ffmpegPath.includes('app.asar')) {
+                        ffmpegPath = ffmpegPath.replace('app.asar', 'app.asar.unpacked');
+                        console.log('Modified ffmpeg-static path for asar:', ffmpegPath);
+                    }
+                } else {
+                    console.log('ffmpeg-static returned null or undefined path');
+                }
+            } catch (staticError) {
+                console.error('Error loading ffmpeg-static:', staticError);
+            }
         }
     } else {
-        // For development: try ffmpeg-static first, then system ffmpeg
+        // For development: use ffmpeg-static
         try {
             ffmpegPath = require('ffmpeg-static');
-        } catch (err) {
-            ffmpegPath = '/opt/homebrew/bin/ffmpeg';
+            console.log('Development FFmpeg path:', ffmpegPath);
+        } catch (devError) {
+            console.error('Error loading ffmpeg-static in development:', devError);
         }
     }
     
-    // Verify the path exists
+    console.log('Current platform:', process.platform);
+    console.log('Initial FFmpeg path:', ffmpegPath);
+    
+    // Platform-specific fallbacks if ffmpeg-static fails
+    if (!ffmpegPath || !fs.existsSync(ffmpegPath)) {
+        console.log('FFmpeg not found at:', ffmpegPath);
+        switch (process.platform) {
+            case 'win32': // Windows first since we're targeting Windows
+                // Check common Windows installation paths
+                const windowsPaths = [
+                    'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe', // This should be first as it's our install location
+                    path.join(process.resourcesPath, 'ffmpeg', 'ffmpeg.exe'),
+                    path.join(app.getAppPath(), 'ffmpeg', 'ffmpeg.exe'),
+                    path.join(app.getPath('exe'), '..', 'ffmpeg', 'ffmpeg.exe'),
+                    'C:\\Program Files (x86)\\ffmpeg\\bin\\ffmpeg.exe',
+                    'C:\\ffmpeg\\bin\\ffmpeg.exe',
+                    path.join(process.env.LOCALAPPDATA || '', 'ffmpeg', 'bin', 'ffmpeg.exe'),
+                    path.join(process.env.APPDATA || '', 'ffmpeg', 'bin', 'ffmpeg.exe')
+                ];
+                
+                for (const windowsPath of windowsPaths) {
+                    console.log('Trying Windows FFmpeg path:', windowsPath);
+                    if (fs.existsSync(windowsPath)) {
+                        ffmpegPath = windowsPath;
+                        console.log('Found FFmpeg at:', ffmpegPath);
+                        break;
+                    }
+                }
+                break;
+            case 'darwin': // macOS
+                const macPaths = [
+                    '/opt/homebrew/bin/ffmpeg',
+                    '/opt/homebrew/Cellar/ffmpeg/7.1_4/bin/ffmpeg',
+                    '/usr/local/bin/ffmpeg'
+                ];
+                for (const macPath of macPaths) {
+                    console.log('Trying macOS FFmpeg path:', macPath);
+                    if (fs.existsSync(macPath)) {
+                        ffmpegPath = macPath;
+                        console.log('Found FFmpeg at:', ffmpegPath);
+                        break;
+                    }
+                }
+                break;
+            case 'linux': // Linux
+                const linuxPaths = [
+                    '/usr/bin/ffmpeg',
+                    '/usr/local/bin/ffmpeg'
+                ];
+                for (const path of linuxPaths) {
+                    if (fs.existsSync(path)) {
+                        ffmpegPath = path;
+                        break;
+                    }
+                }
+                break;
+        }
+    }
+    
+    // Final verification
     if (!fs.existsSync(ffmpegPath)) {
-        throw new Error(`FFmpeg path does not exist: ${ffmpegPath}`);
+        throw new Error(`FFmpeg not found. Please install FFmpeg or verify its installation path. Tried path: ${ffmpegPath}`);
     }
     
     ffmpeg.setFfmpegPath(ffmpegPath);
@@ -93,19 +169,22 @@ function createWindow() {
             contextIsolation: true,
             enableRemoteModule: false,
             nodeIntegration: false,
-            webSecurity: true
+            webSecurity: true,
+            devTools: !app.isPackaged // Disable DevTools in production
         }
     });
 
     win.loadFile(path.join(__dirname, 'moodclassifier', 'index.html'));
     
-    /*
-    // Add resize event listener
-    win.on('resize', () => {
-        const [width, height] = win.getSize();
-        console.log(`Window size: ${width}x${height}`);
+    // Disable menu in production
+    if (app.isPackaged) {
+        win.setMenu(null);
+    }
+    
+    // Prevent new windows from being opened
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        return { action: 'deny' };
     });
-    */
 }
 
 app.whenReady().then(createWindow);

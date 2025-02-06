@@ -1,6 +1,5 @@
 /node_modules
 /dist
-/build
 /out
 /Mood Classifier-darwin-*
 *.asar

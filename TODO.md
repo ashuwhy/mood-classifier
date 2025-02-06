@@ -1,2 +1,3 @@
 - Make the lyrics btn work
 - Make the lyrics overlay look better more like apple music
+- Add dynamic color extraction from album art

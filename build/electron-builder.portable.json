@@ -1,0 +1,12 @@
+{
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "artifactName": "${productName}_${version}_Portable_${arch}.${ext}",
+      "icon": "../icon/icon.ico"
+    }
+  }

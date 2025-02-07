@@ -3,22 +3,25 @@
   "version": "1.0.5",
   "description": "An application that gives BPM and Key of a song and classifies the mood of songs",
   "author": {
-    "name": "Ashutosh Sharma",
+    "name": "Ashu Inc.",
     "email": "ashutoshsharmawhy@gmail.com",
     "url": "https://github.com/ashuwhy"
   },
   "type": "commonjs",
-  "main": "main.js",
+  "main": "./main.js",
   "scripts": {
     "start": "electron .",
-    "postinstall": "electron-builder install-app-deps",
-    "build": "electron-builder build --mac --win --linux -c.mac.identity=null",
-    "build:mac": "electron-builder build --mac -c.mac.identity=null",
-    "build:win": "electron-builder build --win",
-    "build:linux": "electron-builder build --linux"
+    "postinstall": "npx electron-builder install-app-deps",
+    "build": "npx electron-builder build --mac --win --linux -c.mac.identity=null",
+    "build:mac": "npx electron-builder build --mac -c.mac.identity=null",
+    "build:linux": "npx electron-builder build --linux",
+    "build:win": "npx electron-builder --win",
+    "build:win-nsis": "npx electron-builder --win --config ./build/electron-builder.nsis.json",
+    "build:win-portable": "npx electron-builder --win --config ./build/electron-builder.portable.json"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.15.9",
+    "asar": "^3.2.0",
     "axios": "^1.7.7",
     "canvas": "^2.11.2",
     "colorthief": "^2.6.0",
@@ -29,11 +32,12 @@
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
-    "electron": "^25.3.0",
-    "electron-builder": "^24.9.1",
-    "nsisEnvVar": "^1.0.0"
+    "electron": "25.3.0",
+    "electron-builder": "^25.1.8",
+    "makensis": "^2.0.1"
   },
   "build": {
+    "electronVersion": "25.3.0",
     "appId": "com.moodclassifier.app",
     "productName": "Mood Classifier",
     "asar": true,
@@ -41,7 +45,13 @@
       "node_modules/ffmpeg-static/**/*"
     ],
     "files": [
-      "**/*",
+      "build/**/*",
+      "main.js",
+      "moodclassifier/**/*",
+      "js/**/*",
+      "icon/**/*",
+      
+      "!/dist/**",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
       "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
       "!**/node_modules/*.d.ts",
@@ -68,11 +78,10 @@
       "!**/docs/**",
       "!**/test/**",
       "!**/__tests__/**",
-      "!**/dist/**",
-      "!**/build/{background.png,installer.nsh,entitlements.mac.plist}",
-      "!node_modules/ffmpeg-static/{node_modules,docs,test}/**"
+      "!moodclassifier/package.json"
     ],
     "directories": {
+      "app": ".",
       "buildResources": "build",
       "output": "dist"
     },
@@ -80,11 +89,17 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "zip",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "public.app-category.music",
@@ -93,7 +108,7 @@
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "artifactName": "${productName}_${version}_${arch}.${ext}"
     },
     "dmg": {
       "contents": [
@@ -129,7 +144,7 @@
         }
       ],
       "icon": "icon/icon.ico",
-      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "artifactName": "${productName}_${version}_${arch}.${ext}",
       "signAndEditExecutable": true
     },
     "nsis": {
@@ -152,22 +167,34 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "Audio",
       "icon": "icon/icon.png",
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "artifactName": "${productName}_${version}_${arch}.${ext}"
     },
     "extraResources": [
       {
         "from": "build/extraResources/",
         "to": ".",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "build/finish.bmp",
+        "to": "."
       }
     ]
   }

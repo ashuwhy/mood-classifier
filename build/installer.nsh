@@ -43,4 +43,14 @@
 !macroend
 
 !include "x64.nsh"
-!include "WinMessages.nsh" 
+!include "WinMessages.nsh"
+
+; NSIS include file to customize installer
+
+; Disable data block optimization to fix memory mapping issues
+; Commenting out the following line will enable NSIS optimization:
+; SetDatablockOptimize off
+
+; Set the custom finish page background image.
+; Ensure the file (finish.bmp) exists in your build folder and is in BMP format.
+!define MUI_FINISHPAGE_BITMAP "${BUILD_RESOURCES_DIR}\finish.bmp"

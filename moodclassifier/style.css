@@ -614,24 +614,6 @@ span.refresh-icon.material-icons-round {
     color: #1a73e8;
 }
 
-/* Remove lyrics button styles */
-button#mute {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.3s;
-}
-
-button#mute:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Remove lyrics container and button styles */
-/* Lyrics container and button styles removed */
-
 /* Remove lyrics overlay styles */
 /* Lyrics overlay styles removed */
 

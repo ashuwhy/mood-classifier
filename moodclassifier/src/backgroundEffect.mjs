@@ -3,8 +3,8 @@ const colorThief = new ColorThief();
 
 img.onload = () => {
     const dominantColor = colorThief.getColor(img);
-    document.querySelector('.lyrics-overlay').style.backgroundColor = `rgba(${dominantColor.join(',')}, 0.5)`;
-    document.querySelector('.lyrics-header .song-title').style.color = `rgb(${dominantColor.join(',')})`;
+    // document.querySelector('.lyrics-overlay').style.backgroundColor = `rgba(${dominantColor.join(',')}, 0.5)`;
+    // document.querySelector('.lyrics-header .song-title').style.color = `rgb(${dominantColor.join(',')})`;
 };
 
 // Set the background image
@@ -129,4 +129,16 @@ function handleAlbumArtLoad(albumArtUrl) {
     };
     
     img.src = albumArtUrl;
+}
+
+// Remove lyrics overlay color effects
+function updateColors(img) {
+    const colorThief = new ColorThief();
+    const dominantColor = colorThief.getColor(img);
+    
+    // Remove lyrics overlay color updates
+    // document.querySelector('.lyrics-overlay').style.backgroundColor = `rgba(${dominantColor.join(',')}, 0.5)`;
+    // document.querySelector('.lyrics-header .song-title').style.color = `rgb(${dominantColor.join(',')})`;
+    
+    // ... existing code ...
 }

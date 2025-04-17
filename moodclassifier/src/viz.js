@@ -89,7 +89,6 @@ class PlaybackControls {
         this.forwardButton = document.getElementById('forward');
         this.muteButton = document.getElementById('mute');
         this.volumeSlider = document.getElementById('volume-slider');
-        this.lyricsButton = document.getElementById('lyrics-button');
 
         // Set initial volume to 50%
         this.wavesurfer.setVolume(0.5);
@@ -167,10 +166,6 @@ class PlaybackControls {
                 muteIcon.textContent = this.isMuted ? 'volume_off' : 'volume_up';
             };
         }
-
-        if (this.lyricsButton) {
-            this.lyricsButton.addEventListener('click', () => this.showLyrics());
-        }
     }
 
     updatePlayButtonIcon() {
@@ -186,101 +181,12 @@ class PlaybackControls {
         this.volumeSlider.style.setProperty('--volume-percentage', `${percentage}%`);
     }
 
-    async showLyrics() {
-        if (!window.currentSongMetadata) {
-            console.error('No song metadata available');
-            return;
-        }
-
-        try {
-            // Fetch song info first
-            const songInfo = await window.electronAPI.getLyrics({
-                artist: window.currentSongMetadata.artist,
-                title: window.currentSongMetadata.title
-            }).catch(error => {
-                // Handle specific error cases
-                if (error.message.includes('No lyrics found')) {
-                    alert('No lyrics found for this song');
-                } else {
-                    alert('Unable to load lyrics');
-                    console.error('Error fetching lyrics:', error);
-                }
-                return null;
-            });
-
-            // If no songInfo or error occurred, return early
-            if (!songInfo || !songInfo.lyrics) {
-                return;
-            }
-
-            // Only show overlay if lyrics were found
-            const overlay = document.querySelector('.lyrics-overlay');
-            const songTitle = overlay.querySelector('.song-title');
-            const songArtist = overlay.querySelector('.song-artist');
-            const lyricsContent = overlay.querySelector('.lyrics-content');
-
-            // Show loading state
-            overlay.style.display = 'flex';
-            overlay.style.opacity = '1';
-            overlay.style.pointerEvents = 'auto';
-            songTitle.textContent = songInfo.title;
-            songArtist.textContent = songInfo.artist;
-
-            // Format and display lyrics
-            const formattedLyrics = songInfo.lyrics
-                .split('\n')
-                .map(line => line.trim())
-                .filter(line => line.length > 0 && !line.includes('*'))
-                .map(line => {
-                    if (line.match(/^\[(.*?)\]$/)) {
-                        return `<div class="lyrics-line section-header">${line}</div>`;
-                    }
-                    return `<div class="lyrics-line">${line}</div>`;
-                })
-                .join('');
-
-            lyricsContent.innerHTML = formattedLyrics;
-
-            // Update album art if available
-            if (songInfo.album_art) {
-                handleAlbumArtLoad(songInfo.album_art);
-            }
-
-            // Add click handler to close overlay
-            const closeHandler = (e) => {
-                if (e.target === overlay) {
-                    overlay.style.display = 'none';
-                    overlay.style.opacity = '0';
-                    overlay.style.pointerEvents = 'none';
-                    overlay.removeEventListener('click', closeHandler);
-                }
-            };
-            overlay.addEventListener('click', closeHandler);
-
-            // Add keyboard handler to close overlay with Escape key
-            const keyHandler = (e) => {
-                if (e.key === 'Escape') {
-                    overlay.style.display = 'none';
-                    overlay.style.opacity = '0';
-                    overlay.style.pointerEvents = 'none';
-                    document.removeEventListener('keydown', keyHandler);
-                }
-            };
-            document.addEventListener('keydown', keyHandler);
-
-        } catch (error) {
-            console.error('Error fetching lyrics:', error);
-            alert('Unable to load lyrics');
-        }
-    }
-
     toggleEnabled(enabled) {
         const buttons = [
             this.playButton,
             this.backwardButton,
             this.forwardButton,
-            this.muteButton,
-            this.lyricsButton
+            this.muteButton
         ];
         
         buttons.forEach(button => {

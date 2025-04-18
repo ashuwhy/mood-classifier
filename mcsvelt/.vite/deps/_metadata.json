@@ -1,0 +1,145 @@
+{
+  "hash": "8bbbf76e",
+  "configHash": "bb4a401b",
+  "lockfileHash": "382d32ce",
+  "browserHash": "234f9770",
+  "optimized": {
+    "svelte": {
+      "src": "../../node_modules/svelte/src/index-client.js",
+      "file": "svelte.js",
+      "fileHash": "1af1cf29",
+      "needsInterop": false
+    },
+    "@tensorflow/tfjs-core": {
+      "src": "../../node_modules/@tensorflow/tfjs-core/dist/index.js",
+      "file": "@tensorflow_tfjs-core.js",
+      "fileHash": "7f7ebee6",
+      "needsInterop": false
+    },
+    "svelte/animate": {
+      "src": "../../node_modules/svelte/src/animate/index.js",
+      "file": "svelte_animate.js",
+      "fileHash": "b0544ab7",
+      "needsInterop": false
+    },
+    "svelte/easing": {
+      "src": "../../node_modules/svelte/src/easing/index.js",
+      "file": "svelte_easing.js",
+      "fileHash": "615c2a07",
+      "needsInterop": false
+    },
+    "svelte/internal": {
+      "src": "../../node_modules/svelte/src/internal/index.js",
+      "file": "svelte_internal.js",
+      "fileHash": "7ce8a695",
+      "needsInterop": true
+    },
+    "svelte/internal/client": {
+      "src": "../../node_modules/svelte/src/internal/client/index.js",
+      "file": "svelte_internal_client.js",
+      "fileHash": "edeba5ec",
+      "needsInterop": false
+    },
+    "svelte/internal/disclose-version": {
+      "src": "../../node_modules/svelte/src/internal/disclose-version.js",
+      "file": "svelte_internal_disclose-version.js",
+      "fileHash": "fb0687dd",
+      "needsInterop": false
+    },
+    "svelte/internal/flags/legacy": {
+      "src": "../../node_modules/svelte/src/internal/flags/legacy.js",
+      "file": "svelte_internal_flags_legacy.js",
+      "fileHash": "10374536",
+      "needsInterop": false
+    },
+    "svelte/internal/flags/tracing": {
+      "src": "../../node_modules/svelte/src/internal/flags/tracing.js",
+      "file": "svelte_internal_flags_tracing.js",
+      "fileHash": "4b7113de",
+      "needsInterop": false
+    },
+    "svelte/legacy": {
+      "src": "../../node_modules/svelte/src/legacy/legacy-client.js",
+      "file": "svelte_legacy.js",
+      "fileHash": "8b8189f1",
+      "needsInterop": false
+    },
+    "svelte/motion": {
+      "src": "../../node_modules/svelte/src/motion/index.js",
+      "file": "svelte_motion.js",
+      "fileHash": "1dc6a78f",
+      "needsInterop": false
+    },
+    "svelte/reactivity": {
+      "src": "../../node_modules/svelte/src/reactivity/index-client.js",
+      "file": "svelte_reactivity.js",
+      "fileHash": "b5961d4b",
+      "needsInterop": false
+    },
+    "svelte/reactivity/window": {
+      "src": "../../node_modules/svelte/src/reactivity/window/index.js",
+      "file": "svelte_reactivity_window.js",
+      "fileHash": "4b4d25f1",
+      "needsInterop": false
+    },
+    "svelte/store": {
+      "src": "../../node_modules/svelte/src/store/index-client.js",
+      "file": "svelte_store.js",
+      "fileHash": "67ffb325",
+      "needsInterop": false
+    },
+    "svelte/transition": {
+      "src": "../../node_modules/svelte/src/transition/index.js",
+      "file": "svelte_transition.js",
+      "fileHash": "8b29110e",
+      "needsInterop": false
+    },
+    "svelte/events": {
+      "src": "../../node_modules/svelte/src/events/index.js",
+      "file": "svelte_events.js",
+      "fileHash": "e1d1a56d",
+      "needsInterop": false
+    },
+    "wavesurfer.js": {
+      "src": "../../node_modules/wavesurfer.js/dist/wavesurfer.esm.js",
+      "file": "wavesurfer__js.js",
+      "fileHash": "2d0800a0",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-V5KMDRU4": {
+      "file": "chunk-V5KMDRU4.js"
+    },
+    "chunk-RWEADT42": {
+      "file": "chunk-RWEADT42.js"
+    },
+    "chunk-7SPCLOOJ": {
+      "file": "chunk-7SPCLOOJ.js"
+    },
+    "chunk-7RQDXF5S": {
+      "file": "chunk-7RQDXF5S.js"
+    },
+    "chunk-7QVV7TAH": {
+      "file": "chunk-7QVV7TAH.js"
+    },
+    "chunk-MAW5ZYTO": {
+      "file": "chunk-MAW5ZYTO.js"
+    },
+    "chunk-7ZRJNXJN": {
+      "file": "chunk-7ZRJNXJN.js"
+    },
+    "chunk-VGTFYHM7": {
+      "file": "chunk-VGTFYHM7.js"
+    },
+    "chunk-NE7JA6SP": {
+      "file": "chunk-NE7JA6SP.js"
+    },
+    "chunk-OKMPZSYG": {
+      "file": "chunk-OKMPZSYG.js"
+    },
+    "chunk-G3PMV62Z": {
+      "file": "chunk-G3PMV62Z.js"
+    }
+  }
+}

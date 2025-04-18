@@ -1,0 +1,106 @@
+{
+  "name": "mcsvelt",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "concurrently -k \"vite --mode electron\" \"npm run electron:dev\"",
+    "electron:dev": "wait-on -t 30000 tcp:5173 && cross-env NODE_ENV=development electron .",
+    "electron:dev:direct": "cross-env NODE_ENV=development electron .",
+    "build": "vite build && ./copy-assets.sh",
+    "build:electron": "cross-env NODE_ENV=production vite build --mode electron && ./copy-assets.sh",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "electron:build": "cross-env NODE_ENV=production vite build --mode electron && ./copy-assets.sh && electron-builder",
+    "electron:preview": "cross-env NODE_ENV=production vite build --mode electron && ./copy-assets.sh && electron .",
+    "audit": "npm audit --production",
+    "lint": "eslint --ext .js,.ts,.svelte .",
+    "optimize": "vite optimize"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/fluent-ffmpeg": "^2.1.24",
+    "autoprefixer": "^10.4.14",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^30.0.1",
+    "electron-builder": "^24.13.3",
+    "electron-builder-notarize": "^1.5.2",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-svelte": "^2.35.1",
+    "postcss": "^8.4.27",
+    "postcss-load-config": "^4.0.1",
+    "svelte": "^5.23.1",
+    "svelte-check": "^4.1.5",
+    "tailwindcss": "^3.3.3",
+    "typescript": "~5.7.2",
+    "vite": "^6.3.1",
+    "vite-plugin-electron": "^0.28.2",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-backend-wasm": "^4.22.0",
+    "axios": "^1.6.7",
+    "dotenv": "^16.3.1",
+    "electron-log": "^5.0.1",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "form-data": "^4.0.0",
+    "helmet": "^7.1.0",
+    "rimraf": "^6.0.1",
+    "sanitize-html": "^2.11.0",
+    "wavesurfer.js": "^7.9.4",
+    "youtube-dl-exec": "^2.5.8"
+  },
+  "build": {
+    "appId": "com.mcsvelt.app",
+    "productName": "Mood Classifier",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "extraResources": [
+      {
+        "from": "vanailla/moodclassifier/models",
+        "to": "models"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.music",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "win": {
+      "target": "nsis",
+      "signingHashAlgorithms": [
+        "sha256"
+      ]
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Audio"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/electron-log/**/*",
+      "node_modules/ffmpeg-static/**/*"
+    ],
+    "afterSign": "electron-builder-notarize",
+    "publish": {
+      "provider": "generic",
+      "url": "https://example.com/auto-updates"
+    }
+  }
+}
